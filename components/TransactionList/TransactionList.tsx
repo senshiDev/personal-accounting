@@ -2,12 +2,11 @@
 
 import { getTransactions, removeTransactionFromStorage } from "@/lib/storage"
 import { TTransactionStoredWithId } from "@/lib/Transaction"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import Container from "../container/Container"
-import { Badge } from "../ui/badge"
 import { toPersianDate } from "@/lib/toPersianDate"
-import { ArrowDown, ArrowDownLeft, ArrowDownRight, ArrowUp, ArrowUpLeft, ArrowUpRight, Pencil, Trash2 } from "lucide-react"
+import { ArrowDownRight,  ArrowUpRight, Pencil, Trash2 } from "lucide-react"
 import { Button } from "../ui/button"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "../ui/alert-dialog"
 import { useRouter } from "next/navigation"
@@ -18,30 +17,34 @@ import SummaryCards from "../SummaryCards/SummaryCards"
 
 function TransactionList() {
     const [transaction, setTransaction] = useState<TTransactionStoredWithId[]>([])
-    const [loading, setLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(true)
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+
     const router = useRouter();
 
-    const sorted = transaction
+    const sorted = useMemo(()=> transaction
       .map((tx , index ) => ({tx,index})) // برچسب زدن
       .sort((a,b) => { // مرتب سازی
         const dateComparison = b.tx.date.localeCompare(a.tx.date);
         if(dateComparison !==0 ) return dateComparison
         return b.index - a.index;
       })
-      .map(({ tx }) => tx); // برچسب زدایی
+      //برچسب زدایی در مرحله اخر
+      .map(({ tx }) => tx) ,[transaction])
+
+    
 
     
     
 
     // تابع بارگذاری داده‌ها
     const loadData = () => {
-        setLoading(true)
+        setIsLoading(true)
         const data = getTransactions()
         setTransaction(data)
-        setLoading(false)
+        setIsLoading(false)
     }
 
     useEffect(()=>{
@@ -68,31 +71,25 @@ function TransactionList() {
     router.push(`/edit/${id}`);
   }
 
-    if (loading) {
+    if (isLoading) {
+      
       return (
         <Container>
           {/* خلاصه‌ها همیشه نشان داده شوند */}
           <SummaryCards transactions={transaction} />
 
           {/* بقیهٔ UI (لیست یا حالت خالی/بارگذاری) */}
-          {loading ? (
-            <Card className="w-full shadow-sm border-0">
+          <Card className="shadow-sm border-0">
+                <CardHeader className="pb-3">
+                    <CardTitle className="text-lg font-vazir"> لیست تراکنش‌ها</CardTitle>
+                </CardHeader>
                 <CardContent className="py-10 text-center text-gray-400">
-                    <p>⏳ در حال بارگذاری تراکنش‌ها...</p>
+                  <p className="text-lg">
+                   در حال بارگذاری تراکنش‌ها ... ⏳
+                  </p>
                 </CardContent>
-            </Card>
-          ) : transaction.length === 0 ? (
-            <Card className="border-dashed border-2 border-gray-200">
-                <CardContent className="py-10 text-center text-gray-400">
-                    <p className="text-lg">📭 هیچ تراکنشی ثبت نشده است.</p>
-                    <p className="text-sm mt-1">برای شروع، اولین تراکنش خود را ثبت کنید.</p>
-                </CardContent>
-            </Card>
-          ) : (
-            <Card className="shadow-sm border-0">
-                {/* ... لیست تراکنش‌ها ... */}
-            </Card>
-          )}
+          </Card>
+          
         </Container>
       );
     }
@@ -106,12 +103,12 @@ function TransactionList() {
                 </CardHeader>
                 <CardContent className="p-0">
                     {sorted.length === 0 ? (
-                        <Card className="border-dashed border-2 border-gray-200">
-                            <CardContent className="py-10 text-center text-gray-400">
-                                <p className="text-lg">📭 هیچ تراکنشی ثبت نشده است.</p>
-                                <p className="text-sm mt-1">برای شروع، اولین تراکنش خود را ثبت کنید.</p>
-                            </CardContent>
-                        </Card>
+                        <Card className="border-0 shadow-none ring-0">
+                          <CardContent className="py-10 text-center text-gray-400">
+                            <p className="text-lg"> هیچ تراکنشی ثبت نشده است 📭</p>
+                            <p className="text-sm mt-1">برای شروع، اولین تراکنش خود را ثبت کنید</p>
+                        </CardContent>
+                    </Card>
                     ) : (
                       <ul className="divide-y divide-gray-100">
                         {sorted.map((t) => {
@@ -187,7 +184,7 @@ function TransactionList() {
               این عملیات قابل بازگشت نیست و تراکنش برای همیشه حذف خواهد شد.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="!flex-row-reverse gap-x-2 gap-y-0">
+          <AlertDialogFooter className="flex-row-reverse gap-x-2 gap-y-0">
             <AlertDialogCancel className="cursor-pointer">انصراف</AlertDialogCancel>
             <AlertDialogAction className="cursor-pointer" onClick={confirmDelete}>
               بله، حذف کن
