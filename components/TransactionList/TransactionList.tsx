@@ -97,9 +97,9 @@ function TransactionList() {
     return(
         <Container>
           <SummaryCards transactions={transaction} />
-            <Card className="shadow-sm border-0">
-                <CardHeader className="pb-3">
-                    <CardTitle className="text-lg font-vazir"> لیست تراکنش‌ها</CardTitle>
+            <Card className="shadow-sm border-0 my-4">
+                <CardHeader className="pb-3 px-2">
+                    <CardTitle className=" text-lg font-vazir"> لیست تراکنش‌ها</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
                     {sorted.length === 0 ? (
@@ -114,7 +114,7 @@ function TransactionList() {
                         {sorted.map((t) => {
                           const isIncome = t.type === "income"
                           return (
-                            <li key={t.id} className="flex items-center gap-3 px-4 py-3">
+                            <li key={t.id} className="flex items-center justify-between gap-3 px-2 md:px-4 py-3">
                               {/* آیکون دایره‌ای */}
                               <div
                                 className={`flex size-9 shrink-0 items-center justify-center rounded-full ${
@@ -129,25 +129,29 @@ function TransactionList() {
                                 <ArrowDownRight className="size-4" />
                                 )}
                               </div>
+                              
+                              <div className="flex flex-col sm:items-center sm:flex-row min-w-0 flex-1">
+                                {/* دسته‌بندی و تاریخ */}
+                                <div className="min-w-0 flex-1">
+                                  <p className="truncate font-medium text-gray-800">{t.category}</p>
+                                  <p className="text-xs text-gray-500">{toPersianDate(t.date)}</p>
+                                </div>
 
-                              {/* دسته‌بندی و تاریخ */}
-                              <div className="min-w-0 flex-1">
-                                <p className="truncate font-medium text-gray-800">{t.category}</p>
-                                <p className="text-xs text-gray-500">{toPersianDate(t.date)}</p>
-                              </div>
-
-                              {/* مبلغ */}
-                              <p
-                                className={`shrink-0 font-semibold tabular-nums ${
-                                isIncome ? "text-emerald-600" : "text-rose-600"
-                                }`}
-                              >
+                                {/* مبلغ */}
+                                <p
+                                  title={`${t.amount.toLocaleString("fa-IR")} ${isIncome ? "+" : "−"} تومان`}
+                                  className={` text-sm sm:text-base font-semibold tabular-nums  ${
+                                  isIncome ? "text-emerald-600" : "text-rose-600"
+                                  }`}
+                                >
                                 
-                                {t.amount.toLocaleString("fa-IR")} {isIncome ? "+" : "−"} تومان
-                              </p>
+                                  {t.amount.toLocaleString("fa-IR")} {isIncome ? "+" : "−"} تومان
+                                </p>
+                              </div>
+                              
 
                               {/* دکمه‌ها */}
-                              <div className="flex shrink-0 items-center gap-1">
+                              <div className="flex flex-col sm:flex-row shrink-0 items-center gap-1">
                                 <Button
                                   variant="ghost"
                                   size="icon"

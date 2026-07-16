@@ -13,7 +13,7 @@ const formBaseSchema = {
     amount: z.number({
         // required_error: "مبلغ تراکنش الزامی است.",
         // invalid_type_error: "مبلغ باید یک عدد باشد"
-    }).min(1,{ message: "مقدار نمی‌تواند خالی باشد" }).nonnegative({ message: "مقدار نمی‌تواند منفی باشد" }),
+    }).min(1,{ message: "مقدار نمی‌تواند خالی باشد" }).max(999_999_999_999, { message: "مبلغ نمی‌تواند بیش از ۹۹۹ میلیارد تومان باشد" }).nonnegative({ message: "مقدار نمی‌تواند منفی باشد" }),
     Explane: z.string().optional(),
 };
 
