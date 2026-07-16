@@ -139,7 +139,6 @@ function TransactionList() {
 
                                 {/* مبلغ */}
                                 <p
-                                  title={`${t.amount.toLocaleString("fa-IR")} ${isIncome ? "+" : "−"} تومان`}
                                   className={` text-sm sm:text-base font-semibold tabular-nums  ${
                                   isIncome ? "text-emerald-600" : "text-rose-600"
                                   }`}
@@ -180,9 +179,9 @@ function TransactionList() {
         </Card>
 
         {/* دیالوگ تأیید حذف */}
-      <AlertDialog  open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
+      <AlertDialog   open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <AlertDialogContent >
+          <AlertDialogHeader dir="rtl" className="place-items-start text-right">
             <AlertDialogTitle >آیا از حذف این تراکنش مطمئن هستید؟</AlertDialogTitle>
             <AlertDialogDescription  className="text-right">
               این عملیات قابل بازگشت نیست و تراکنش برای همیشه حذف خواهد شد.
