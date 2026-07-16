@@ -20,6 +20,7 @@ function TransactionList() {
     const [isLoading, setIsLoading] = useState(true)
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [filterType, setFilterType] = useState<"all" | "income" | "expense">("all")
 
 
     const router = useRouter();
@@ -34,7 +35,7 @@ function TransactionList() {
       //برچسب زدایی در مرحله اخر
       .map(({ tx }) => tx) ,[transaction])
 
-    
+      const filteredData = filterType === "all" ? sorted : sorted.filter(tx => tx.type === filterType)
 
     
     
@@ -98,11 +99,40 @@ function TransactionList() {
         <Container>
           <SummaryCards transactions={transaction} />
             <Card className="shadow-sm border-0 my-4">
-                <CardHeader className="pb-3 px-2">
-                    <CardTitle className=" text-lg font-vazir"> لیست تراکنش‌ها</CardTitle>
+                <CardHeader className="pb-3 px-2 sm:px-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                        <CardTitle className=" text-lg font-vazir"> لیست تراکنش‌ها</CardTitle>
+                    <div className="flex items-center gap-1.5">
+                      <Button
+                        size="sm"
+                        variant={filterType === "all" ? "default" : "outline"}
+                        onClick={() => setFilterType("all")}
+                        className="cursor-pointer"
+                      >
+                        همه
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={filterType === "income" ? "default" : "outline"}
+                        onClick={() => setFilterType("income")}
+                        className="cursor-pointer"
+                      >
+                        درآمد
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={filterType === "expense" ? "default" : "outline"}
+                        onClick={() => setFilterType("expense")}
+                        className="cursor-pointer"
+                      >
+                        هزینه
+                      </Button>
+                    </div>
+                  </div>
+
                 </CardHeader>
                 <CardContent className="p-0">
-                    {sorted.length === 0 ? (
+                    {filteredData.length === 0 ? (
                         <Card className="border-0 shadow-none ring-0">
                           <CardContent className="py-10 text-center text-gray-400">
                             <p className="text-lg"> هیچ تراکنشی ثبت نشده است 📭</p>
@@ -111,10 +141,10 @@ function TransactionList() {
                     </Card>
                     ) : (
                       <ul className="divide-y divide-gray-100">
-                        {sorted.map((t) => {
+                        {filteredData.map((t) => {
                           const isIncome = t.type === "income"
                           return (
-                            <li key={t.id} className="flex items-center justify-between gap-3 px-2 md:px-4 py-3">
+                            <li key={t.id} className="flex items-center justify-between gap-3 px-2 sm:px-4 py-3">
                               {/* آیکون دایره‌ای */}
                               <div
                                 className={`flex size-9 shrink-0 items-center justify-center rounded-full ${
